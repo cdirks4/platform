@@ -11,7 +11,7 @@ export default defineNuxtConfig({
     },
   },
   css: ["~/assets/css/main.css"],
-  modules: ["@nuxtjs/tailwindcss", "nuxt-highcharts"],
+  modules: ["@nuxtjs/tailwindcss"],
   vite: {
     server: {
       hmr: {

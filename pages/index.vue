@@ -4,13 +4,21 @@ import {
   UserSession,
   showConnect,
   openSTXTransfer,
+  openContractCall,
 } from "@stacks/connect";
+import { makeContractCall, broadcastTransaction } from "@stacks/transactions";
 import { ref, onMounted } from "vue";
-import Highcharts from "highcharts";
-import HighchartsDependencyWheel from "highcharts/modules/dependency-wheel"; // Add this import statement
-import Sankey from "highcharts/modules/sankey";
-import Exporting from "highcharts/modules/exporting";
+
 import { StacksTestnet, StacksDevnet } from "@stacks/network";
+import {
+  uintCV,
+  intCV,
+  bufferCV,
+  stringAsciiCV,
+  stringUtf8CV,
+  standardPrincipalCV,
+  trueCV,
+} from "@stacks/transactions";
 
 export default {
   name: "App",
@@ -40,6 +48,25 @@ export default {
       showConnect(authOptions);
     };
     const userTransactionRef = ref(null);
+    const testDeposit = async () => {
+      const test = await openContractCall({
+        contractAddress: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+        contractName: "lagoon",
+        functionName: "deposit",
+        functionArgs: [uintCV(2000)],
+        onFinish: (data) => {
+          console.log(data);
+          console.log(
+            `https://explorer.hiro.so/txid/${data.txId}?chain=testnet&api=http://localhost:${3999}`
+          );
+          userTransactionRef.value = `https://explorer.hiro.so/txid/${data.txId}?chain=testnet&api=http://localhost:${3999}`;
+        },
+        onCancel: () => {
+          console.log("cancel");
+        },
+      });
+      console.log(test);
+    };
     const testTransfer = async () => {
       const test = await openSTXTransfer({
         recipient: "ST1TZ0M4XTA1EHX5Z97Q69RP7PC8QAEMK95WCZXDF",
@@ -47,35 +74,34 @@ export default {
         memo: "Tester",
         network: new StacksDevnet(),
         onFinish: (data) => {
+          console.log(data);
           console.log(
             `https://explorer.hiro.so/txid/${data.txId}?chain=testnet&api=http://localhost:${3999}`
           );
           userTransactionRef.value = `https://explorer.hiro.so/txid/${data.txId}?chain=testnet&api=http://localhost:${3999}`;
         },
       });
+
       // const explorerTransactionUrl =
       // console.log("View transaction in explorer:", explorerTransactionUrl);
     };
     const userData = ref(null);
 
     onMounted(() => {
-      Exporting(Highcharts);
-      Sankey(Highcharts);
-      HighchartsDependencyWheel(Highcharts); // Initialize the dependency wheel module
-
       if (userSession.isSignInPending()) {
         userSession.handlePendingSignIn().then((data) => {
           userData.value = data;
-          // delete userData.value.authResponseToken;
+          delete userData.value.authResponseToken;
           delete userData.value.gaiaAssociationToken;
         });
       } else if (userSession.isUserSignedIn()) {
         userData.value = userSession.loadUserData();
-        // delete userData.value.authResponseToken;
+        delete userData.value.authResponseToken;
         delete userData.value.gaiaAssociationToken;
       }
     });
     return {
+      testDeposit,
       testTransfer,
       connectWallet,
       userTransactionRef,
@@ -249,7 +275,6 @@ export default {
 <template>
   <div class="flex flex-col justify-center items-center h-screen gap-8">
     <h1 class="text-6xl font-black">Hello Stacks</h1>
-    <highchart :options="chartOptions" />
 
     <button
       class="w-full bg-[black] text-white rounded-lg py-2 max-w-[80vw] md:max-w-md h-12"
@@ -281,9 +306,12 @@ export default {
       <div class="max-w-[80vw]">
         <h6 class="text-xs">{{ userData }}</h6>
       </div>
+      <form>
+        <input type="text" name="" id="" />
+      </form>
       <div>
         <button
-          @click="testTransfer"
+          @click="testDeposit"
           class="w-full bg-[black] text-white rounded-lg py-2 max-w-[80vw] md:max-w-md h-12"
         >
           openSTXTransfer
