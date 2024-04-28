@@ -13,6 +13,9 @@ import {
   callReadOnlyFunction,
 } from "@stacks/transactions";
 import logo from "../assets/images/logo.svg";
+import conference1Image from '@/assets/images/conference1.jpeg';
+import conference2Image from '@/assets/images/conference2.jpeg';
+import conference3Image from '@/assets/images/conference3.jpeg';
 import { ref, onMounted } from "vue";
 
 import { StacksTestnet, StacksMocknet } from "@stacks/network";
@@ -33,8 +36,9 @@ export default {
     return {
       showConferences: false,
       conferences: [
-        { id: 1, name: 'Conference 1', image: 'conference1.jpg', price: 99.99 },
-        { id: 2, name: 'Conference 2', image: 'conference2.jpg', price: 149.99 },
+        { id: 1, name: 'Corporate Conference', image: conference1Image, price: 99.99 },
+        { id: 2, name: 'Science Convention', image: conference2Image, price: 149.99 },
+        { id: 2, name: 'Bussiness Conference 2040', image: conference3Image, price: 149.99 },
         // Add more conferences here
       ]
     }
@@ -229,16 +233,27 @@ export default {
     </div>
 
     </div>
-    <div id="frame2"  v-show="showConferences">
-      <ul>
-        <li v-for="conference in conferences" :key="conference.id">
-          <img :src="conference.image" :alt="conference.name" />
-          <h3>{{ conference.name }}</h3>
-          <p>Price: ${{ conference.price }}</p>
-          <button>Buy Ticket</button>
-        </li>
-      </ul>
-
+    <div id="frame2" v-show="showConferences" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div v-for="conference in conferences" :key="conference.id" class="conference-tile">
+      <img :src="conference.image" :alt="conference.name" class="w-full h-48 object-cover" />
+      <div class="p-4">
+        <h3 class="text-lg font-semibold">{{ conference.name }}</h3>
+        <p class="text-gray-600">Price: ${{ conference.price }}</p>
+        <button class="bg-blue-500 text-white py-2 px-4 rounded mt-2">Buy Ticket</button>
+      </div>
     </div>
   </div>
+  </div>
 </template>
+
+<style>
+  .conference-tile {
+    @apply bg-white rounded-lg shadow-md overflow-hidden;
+    height: 400px;
+    width: 300px;
+  }
+
+  .conference-tile img {
+    @apply object-cover;
+  }
+</style>
