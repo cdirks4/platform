@@ -17,7 +17,7 @@ import {
   stringAsciiCV,
   stringUtf8CV,
   standardPrincipalCV,
-  trueCV,
+  trueCV, 
 } from "@stacks/transactions";
 
 export default {
@@ -131,6 +131,7 @@ export default {
           />
         </defs>
       </svg>
+
       <button
         class="bg-[#422397] text-gray-800 rounded-lg py-2 px-4 text-white"
         @click="connectWallet"
