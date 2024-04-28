@@ -22,6 +22,16 @@ import {
 
 export default {
   name: "App",
+  data() {
+    return {
+      showConferences: false,
+      conferences: [
+        { id: 1, name: 'Conference 1', image: 'conference1.jpg', price: 99.99 },
+        { id: 2, name: 'Conference 2', image: 'conference2.jpg', price: 149.99 },
+        // Add more conferences here
+      ]
+    }
+  },
   setup() {
     const appConfig = new AppConfig(
       ["store_write", "publish_data"],
@@ -29,6 +39,7 @@ export default {
     );
     const depositAmount = ref();
     const repay = ref();
+    const showConferences = ref(false);//......................
     const userSession = new UserSession({ appConfig });
     const authOptions = {
       appDetails: {
@@ -48,6 +59,19 @@ export default {
     const connectWallet = () => {
       showConnect(authOptions);
     };
+    //.....................................
+
+    const currentFrame = ref(1);
+
+    const showFrame1 = () => {
+      currentFrame.value = 1;
+    };
+
+    const showFrame2 = () => {
+      currentFrame.value = 2;
+    };
+
+    //............................................
     const userTransactionRef = ref(null);
     const testDeposit = async () => {
       await openContractCall({
@@ -141,8 +165,15 @@ export default {
           "Connect Wallet"
         }}
       </button>
+      <button
+        class="bg-[#422397] text-gray-800 rounded-lg py-2 px-4 text-white"
+        @click="showConferences = !showConferences"
+      >
+        {{ showConferences ? "Home" : "Conference" }}
+      </button>
     </nav>
-    <form
+    <div id="frame1"  v-show="!showConferences">
+      <form
       @submit.prevent="testDeposit"
       class="max-w-md mx-auto flex-col flex justify-between gap-2 mt-2"
     >
@@ -187,6 +218,19 @@ export default {
     </button>
     <div v-if="userData" class="w-[60%]">
       {{ userData.profile.stxAddress.testnet }}
+    </div>
+
+    </div>
+    <div id="frame2"  v-show="showConferences">
+      <ul>
+        <li v-for="conference in conferences" :key="conference.id">
+          <img :src="conference.image" :alt="conference.name" />
+          <h3>{{ conference.name }}</h3>
+          <p>Price: ${{ conference.price }}</p>
+          <button>Buy Ticket</button>
+        </li>
+      </ul>
+
     </div>
   </div>
 </template>
