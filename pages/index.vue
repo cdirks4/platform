@@ -118,7 +118,7 @@ export default {
 <template>
   <div class="h-screen">
     <nav class="flex items-center justify-between bg-black p-4 w-screen">
-      <h1 class="text-6xl font-black text-white">Hello Stacks</h1>
+      <h1 class="text-6xl font-black text-white">Renaissance Lending</h1>
       <button
         class="bg-white text-gray-800 rounded-lg py-2 px-4"
         @click="connectWallet"
