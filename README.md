@@ -14,7 +14,10 @@ This project aims to create a decentralized money lending platform where users c
 
 ### How did the Project Utilize Stacks?
 1.  Utilized  Clarity to write the Loan Smart Contract
-2.   Deployed it on the clarity devnet
+2.  Interacted with Stacks contracts through stacks.js (https://docs.hiro.so/stacks.js)
+3.  Deployed it on the clarity devnet
 
 
-
+## Starting project         
+```npm i```
+```npm run dev``
