@@ -1,7 +1,7 @@
 # Bitcoin Money Lending Platform
 
 ## Overview
-This project aims to create a decentralized money lending platform where users can deposit Bitcoin and get a loan against it. The platform will utilize smart contracts on the Bitcoin blockchain for secure and transparent lending operations.
+This project aims to create a decentralized money lending platform where users can deposit Bitcoin and get a loan against it. The platform will utilize smart contracts on the Bitcoin blockchain for secure and transparent lending operations. This platform helps the users get loan against their BTC which they can use to tap into other potential Market opportunities
 
 ## Features
 1. Users can deposit Bitcoin into their account on the platform.
@@ -11,3 +11,10 @@ This project aims to create a decentralized money lending platform where users c
 5. Secure authentication and user account management.
 6. Transparent transaction history and loan status tracking.
 7. Integration with Bitcoin wallet APIs for seamless deposit and withdrawal.
+
+### How did the Project Utilize Stacks?
+1.  Utilized  Clarity to write the Loan Smart Contract
+2.   Deployed it on the clarity devnet
+
+
+
