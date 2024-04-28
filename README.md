@@ -20,4 +20,4 @@ This project aims to create a decentralized money lending platform where users c
 
 ## Starting project         
 ```npm i```
-```npm run dev``
+```npm run dev```
