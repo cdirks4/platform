@@ -9,7 +9,7 @@ import {
 import { makeContractCall, broadcastTransaction } from "@stacks/transactions";
 import { ref, onMounted } from "vue";
 
-import { StacksTestnet, StacksDevnet } from "@stacks/network";
+import { StacksTestnet, StacksMocknet } from "@stacks/network";
 import {
   uintCV,
   intCV,
@@ -65,6 +65,7 @@ export default {
         onCancel: () => {
           console.log("cancel");
         },
+        network: new StacksMocknet(),
       });
       console.log(test);
     };
@@ -73,7 +74,7 @@ export default {
         recipient: "ST1TZ0M4XTA1EHX5Z97Q69RP7PC8QAEMK95WCZXDF",
         amount: "10",
         memo: "Tester",
-        network: new StacksDevnet(),
+        network: new StacksMocknet(),
         onFinish: (data) => {
           console.log(data);
           console.log(
@@ -129,6 +130,7 @@ export default {
       @submit.prevent="testDeposit"
       class="max-w-md mx-auto flex-col flex justify-between gap-2 mt-2"
     >
+      <label for="deposit">Deposit:</label>
       <input
         type="number"
         v-model="depositAmount"
