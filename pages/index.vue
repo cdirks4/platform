@@ -3,29 +3,15 @@ import {
   AppConfig,
   UserSession,
   showConnect,
-  openSTXTransfer,
   openContractCall,
 } from "@stacks/connect";
 
-import {
-  makeContractCall,
-  broadcastTransaction,
-  callReadOnlyFunction,
-} from "@stacks/transactions";
+import { callReadOnlyFunction } from "@stacks/transactions";
 import logo from "../assets/images/logo.svg";
 import { ref, onMounted } from "vue";
 
-import { StacksTestnet, StacksMocknet } from "@stacks/network";
-import {
-  uintCV,
-  intCV,
-  bufferCV,
-  stringAsciiCV,
-  stringUtf8CV,
-  standardPrincipalCV,
-  trueCV,
-  bufferCVFromString,
-} from "@stacks/transactions";
+import { StacksMocknet } from "@stacks/network";
+import { uintCV } from "@stacks/transactions";
 
 export default {
   name: "App",
@@ -35,7 +21,8 @@ export default {
       "http://localhost:3999"
     );
     const depositAmount = ref();
-    const repay = ref();
+    const borrowAmount = ref();
+    const repayAmount = ref();
     const userSession = new UserSession({ appConfig });
     const userOwes = ref(null);
     const authOptions = {
@@ -76,23 +63,61 @@ export default {
         network: new StacksMocknet(),
       });
     };
+    const repayLoan = async () => {
+      await openContractCall({
+        contractAddress: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+        contractName: "lagoon",
+        functionName: "repay",
+        functionArgs: [uintCV(Number(repayAmount.value))],
+        onFinish: (data) => {
+          console.log(
+            `https://explorer.hiro.so/txid/${data.txId}?chain=testnet&api=http://localhost:${3999}`
+          );
+          userTransactionRef.value = `https://explorer.hiro.so/txid/${data.txId}?chain=testnet&api=http://localhost:${3999}`;
+        },
+        onCancel: () => {
+          console.log("cancel");
+        },
+        network: new StacksMocknet(),
+      });
+      userOwes.value = 1200;
+    };
 
+    const testBorrow = async () => {
+      await openContractCall({
+        contractAddress: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+        contractName: "lagoon",
+        functionName: "borrow",
+        functionArgs: [uintCV(Number(borrowAmount.value))],
+        onFinish: (data) => {
+          console.log(
+            `https://explorer.hiro.so/txid/${data.txId}?chain=testnet&api=http://localhost:${3999}`
+          );
+          userTransactionRef.value = `https://explorer.hiro.so/txid/${data.txId}?chain=testnet&api=http://localhost:${3999}`;
+        },
+        onCancel: () => {
+          console.log("cancel");
+        },
+        network: new StacksMocknet(),
+      });
+    };
     const getAmountOwed = async () => {
       const res = await callReadOnlyFunction({
         contractAddress: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
         contractName: "lagoon",
         functionName: "get-amount-owed",
         network: new StacksMocknet(),
-        senderAddress: "ST319BNBM0Q38QQX6Z155M2M3YD5T379ASCMNWBJ0",
+        senderAddress: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
         functionArgs: [],
         onFinish: (data) => {
           console.log(data);
-          // userTransactionRef.value = `https://explorer.hiro.so/txid/${data.txId}?chain=testnet&api=http://localhost:${3999}`;
+          userTransactionRef.value = `https://explorer.hiro.so/txid/${data.txId}?chain=testnet&api=http://localhost:${3999}`;
         },
         onCancel: () => {
           console.log("cancelled");
         },
       });
+      console.log(res);
       userOwes.value = res.value.value;
     };
 
@@ -116,12 +141,15 @@ export default {
       userOwes,
       logo,
       depositAmount,
+      repayLoan,
       getAmountOwed,
+      testBorrow,
       testDeposit,
       connectWallet,
+      borrowAmount,
       userTransactionRef,
       userData,
-      repay,
+      repayAmount,
       elevationData: [],
     };
   },
@@ -166,13 +194,29 @@ export default {
       </form>
 
       <form
-        @submit.prevent="testDeposit2"
+        @submit.prevent="repayLoan"
         class="max-w-md flex-col flex justify-between gap-2 mt-2"
       >
         <label for="repay">Repay loan amount</label>
         <input
           type="number"
-          v-model="repay"
+          v-model="repayAmount"
+          placeholder="Repay loan amount"
+          id="repay"
+          class="border-[#E2E2E2] rounded-xl p-2 border-2 text-sm h-12 font-light"
+        />
+        <button type="submit" class="bg-black text-white rounded-lg py-2 px-4">
+          Submit
+        </button>
+      </form>
+      <form
+        @submit.prevent="testBorrow"
+        class="max-w-md flex-col flex justify-between gap-2 mt-2"
+      >
+        <label for="repay">Borrow amount</label>
+        <input
+          type="number"
+          v-model="borrowAmount"
           placeholder="Repay loan amount"
           id="repay"
           class="border-[#E2E2E2] rounded-xl p-2 border-2 text-sm h-12 font-light"
@@ -182,7 +226,10 @@ export default {
         </button>
       </form>
       <h2>Claim Yield</h2>
-      <button class="bg-yellow-500 text-gray-800 rounded-lg py-2 px-4">
+      <button
+        @click="testClaim"
+        class="bg-yellow-500 text-gray-800 rounded-lg py-2 px-4"
+      >
         Claim
       </button>
       <div>{{ userOwes }}</div>
@@ -190,11 +237,18 @@ export default {
         class="bg-black text-white rounded-lg py-2 px-4"
         @click="getAmountOwed"
       >
-        Test Reading
+        View Amount Owed
       </button>
     </div>
-    <div v-if="userData" class="w-[60%]">
+    <!-- <div v-if="userData" class="w-[60%]">
       {{ userData.profile.stxAddress.testnet }}
-    </div>
+    </div> -->
+    <NuxtLink
+      v-if="userTransactionRef"
+      :to="userTransactionRef"
+      class="w-[60%]"
+    >
+      {{ userTransactionRef }}
+    </NuxtLink>
   </div>
 </template>
