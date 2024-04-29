@@ -21,3 +21,5 @@ This project aims to create a decentralized money lending platform where users c
 ## Starting project         
 ```npm i```
 ```npm run dev```
+### Team
+![IMG_8239](https://github.com/cdirks4/platform/assets/98354316/09745a75-8eaa-4c05-919b-363f24e59429)
